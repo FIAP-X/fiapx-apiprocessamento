@@ -3,8 +3,11 @@ package com.fiapx.apiprocessamento;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
 import java.util.List;
@@ -26,11 +29,9 @@ public class SQSConsumer {
 
     public void receiveMessages() {
 
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey);
-
-        try (var sqsClient = software.amazon.awssdk.services.sqs.SqsClient.builder()
-                .region(software.amazon.awssdk.regions.Region.of(awsRegion))
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+        try (SqsClient sqsClient = SqsClient.builder()
+                .region(Region.US_EAST_1)
+                .credentialsProvider(DefaultCredentialsProvider.create())
                 .build()) {
 
             GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
@@ -61,7 +62,7 @@ public class SQSConsumer {
                 sqsClient.deleteMessage(deleteMessageRequest);
             }
         } catch (SdkException e) {
-            System.err.println("Erro ao processar mensagens do SQS: " + e.getMessage() + awsAccessKeyId + awsSecretAccessKey);
+            System.err.println("O Erro ao processar mensagens do SQS: " + e.getMessage());
         }
     }
 }
