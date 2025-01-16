@@ -13,12 +13,6 @@ resource "aws_ecs_task_definition" "api_task" {
   container_definitions = jsonencode([{
     name      = "api-container-processamento"
     image     = var.ecr_image
-    portMappings = [
-      {
-        containerPort = 8081
-        protocol      = "tcp"
-      }
-    ]
     essential = true
     logConfiguration = {
       logDriver = "awslogs"
