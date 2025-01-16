@@ -61,7 +61,7 @@ public class SQSConsumer {
                 sqsClient.deleteMessage(deleteMessageRequest);
             }
         } catch (SdkException e) {
-            System.err.println("Erro ao processar mensagens do SQS: " + e.getMessage());
+            System.err.println("Erro ao processar mensagens do SQS: " + e.getMessage() + awsAccessKeyId + awsSecretAccessKey);
         }
     }
 }
