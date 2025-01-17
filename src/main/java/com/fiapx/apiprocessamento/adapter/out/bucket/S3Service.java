@@ -22,18 +22,19 @@ public class S3Service implements S3ServicePort {
     @Value("${cloud.aws.bucket.zips}")
     private String bucketZips;
 
-    private final S3Client s3Client = S3Client.builder()
-            .region(Region.US_EAST_1)
-            .credentialsProvider(DefaultCredentialsProvider.create())
-            .build();
-
     public byte[] buscarVideo(String chave) throws IOException {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketVideos).key(chave).build();
-        return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
+        return S3Client.builder()
+                .region(Region.US_EAST_1)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build().getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
     }
 
     public void salvarVideo(String chave, byte[] videoZipado) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucketZips).key(chave).build();
-        s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromBytes(videoZipado));
+        S3Client.builder()
+                .region(Region.US_EAST_1)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build().putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromBytes(videoZipado));
     }
 }
