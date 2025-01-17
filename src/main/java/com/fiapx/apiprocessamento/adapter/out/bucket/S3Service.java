@@ -4,7 +4,9 @@ import com.fiapx.apiprocessamento.port.out.S3ServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -12,7 +14,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class S3Service implements S3ServicePort {
 
     @Value("${cloud.aws.bucket.videos}")
@@ -21,7 +22,10 @@ public class S3Service implements S3ServicePort {
     @Value("${cloud.aws.bucket.zips}")
     private String bucketZips;
 
-    private final S3Client s3Client;
+    private final S3Client s3Client = S3Client.builder()
+            .region(Region.US_EAST_1)
+            .credentialsProvider(DefaultCredentialsProvider.create())
+            .build();
 
     public byte[] buscarVideo(String chave) throws IOException {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketVideos).key(chave).build();
