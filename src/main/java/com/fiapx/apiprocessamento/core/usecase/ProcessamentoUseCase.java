@@ -3,11 +3,13 @@ package com.fiapx.apiprocessamento.core.usecase;
 import com.fiapx.apiprocessamento.core.domain.VideoProcessor;
 import com.fiapx.apiprocessamento.port.out.S3ServicePort;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProcessamentoUseCase {
@@ -17,13 +19,16 @@ public class ProcessamentoUseCase {
 
     public void processarVideo(String chaveVideo) {
         try {
+            log.info("Start processor");
             var video = s3Service.buscarVideo(chaveVideo);
+            log.info("Vídeo capturado");
 
-            var videoSegregado = dividirVideoEmPartes(video);
+            //var videoSegregado = dividirVideoEmPartes(video);
 
-            byte[] zipVideo = videoProcessor.processarVideo(videoSegregado);
+            //byte[] zipVideo = videoProcessor.processarVideo(videoSegregado);
 
-            s3Service.salvarVideo("TESTE", zipVideo);
+            s3Service.salvarVideo("TESTE", video);
+            log.info("Vídeo processado salvo");
 
         } catch (IOException e) {
             e.printStackTrace();
