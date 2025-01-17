@@ -1,7 +1,7 @@
 package com.fiapx.apiprocessamento.adapter.out.bucket;
 
 import com.fiapx.apiprocessamento.port.out.S3ServicePort;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class S3Service implements S3ServicePort {
 
@@ -23,11 +24,21 @@ public class S3Service implements S3ServicePort {
     private String bucketZips;
 
     public byte[] buscarVideo(String chave) throws IOException {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketVideos).key(chave).build();
-        return S3Client.builder()
+        S3Client s3Client = S3Client.builder()
                 .region(Region.US_EAST_1)
                 .credentialsProvider(DefaultCredentialsProvider.create())
-                .build().getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
+                .build();
+
+        log.info("Conexao estabelecida");
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketVideos)
+                .key(chave)
+                .build();
+
+        log.info("Objeto capturado");
+
+        return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
     }
 
     public void salvarVideo(String chave, byte[] videoZipado) {
