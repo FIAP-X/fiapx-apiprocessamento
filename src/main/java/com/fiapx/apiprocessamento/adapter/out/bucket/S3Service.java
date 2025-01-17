@@ -14,7 +14,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class S3Service implements S3ServicePort {
 
     @Value("${cloud.aws.bucket.videos}")
