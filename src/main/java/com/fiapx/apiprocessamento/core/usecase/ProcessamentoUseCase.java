@@ -17,22 +17,12 @@ public class ProcessamentoUseCase {
     private final VideoProcessor videoProcessor;
     private final S3ServicePort s3Service;
 
-    public void processarVideo(String chaveVideo) {
-        try {
-            log.info("Start processor");
-            var video = s3Service.buscarVideo(chaveVideo);
-            log.info("Vídeo capturado");
+    public void processarVideo(String chaveVideo) throws IOException {
+        var video = s3Service.buscarVideo(chaveVideo);
 
-            //var videoSegregado = dividirVideoEmPartes(video);
+        // TO-DO PROCESSAMENTO
 
-            //byte[] zipVideo = videoProcessor.processarVideo(videoSegregado);
-
-            s3Service.salvarVideo("TESTE", video);
-            log.info("Vídeo processado salvo");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        s3Service.salvarImagens(chaveVideo, video);
     }
 
     private List<byte[]> dividirVideoEmPartes(byte[] video) {
