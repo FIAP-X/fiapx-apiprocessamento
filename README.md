@@ -1,3 +1,3 @@
-# API de processamento
+# Processador de vídeos
 
-API com serviço de processamento de vídeo em imagens.
+Serviço de processamento de vídeos em imagens.
