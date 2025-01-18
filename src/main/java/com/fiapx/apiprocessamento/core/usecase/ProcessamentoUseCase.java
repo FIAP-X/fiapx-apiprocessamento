@@ -20,6 +20,12 @@ public class ProcessamentoUseCase {
     public void processarVideo(String chaveVideo) throws IOException {
         var video = s3Service.buscarVideo(chaveVideo);
 
+        long tamanhoMaximo = 1024 * 1024 * 100;
+
+        if (video.length > tamanhoMaximo) {
+            throw new IOException("O arquivo excede o tamanho máximo permitido de 100MB.");
+        }
+
         // TO-DO PROCESSAMENTO
 
         s3Service.salvarImagens(chaveVideo, video);
