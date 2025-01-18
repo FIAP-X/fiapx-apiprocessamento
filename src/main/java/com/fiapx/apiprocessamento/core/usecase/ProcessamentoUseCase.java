@@ -1,6 +1,7 @@
 package com.fiapx.apiprocessamento.core.usecase;
 
 import com.fiapx.apiprocessamento.core.domain.VideoProcessor;
+import com.fiapx.apiprocessamento.core.util.ValidadorUtil;
 import com.fiapx.apiprocessamento.port.out.S3ServicePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,17 +19,17 @@ public class ProcessamentoUseCase {
     private final S3ServicePort s3Service;
 
     public void processarVideo(String chaveVideo) throws IOException {
+
+        // TO-DO ATUALIZAR APICONSULTA - PROCESSANDO
+
         var video = s3Service.buscarVideo(chaveVideo);
-
-        long tamanhoMaximo = 1024 * 1024 * 100;
-
-        if (video.length > tamanhoMaximo) {
-            throw new IOException("O arquivo excede o tamanho máximo permitido de 100MB.");
-        }
+        ValidadorUtil.validarVideo(video.length);
 
         // TO-DO PROCESSAMENTO
 
         s3Service.salvarImagens(chaveVideo, video);
+
+        // TO-DO ATUALIZAR APICONSULTA - PROCESSADO + URL
     }
 
     private List<byte[]> dividirVideoEmPartes(byte[] video) {
