@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Local" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="DATABASE_URL" value="localhost" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.fiapx.apiprocessamento.ApiprocessamentoApplication" />
+    <module name="apiprocessamento" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
