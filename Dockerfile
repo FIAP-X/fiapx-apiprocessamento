@@ -20,5 +20,8 @@ WORKDIR /app
 COPY --from=builder /app/target/apiprocessamento-0.0.1-SNAPSHOT.jar .
 COPY --from=builder /app/target/*.properties .
 
+# Expondo a porta que o aplicativo está ouvindo
+EXPOSE 8080
+
 # Comando para iniciar o aplicativo
 CMD ["java", "-jar", "apiprocessamento-0.0.1-SNAPSHOT.jar"]
