@@ -220,12 +220,6 @@ resource "aws_api_gateway_resource" "download_resource" {
   path_part   = "download"
 }
 
-resource "aws_api_gateway_resource" "chave_zip_resource" {
-  rest_api_id = var.api_gateway_id
-  parent_id   = aws_api_gateway_resource.download_resource.id
-  path_part   = "{chaveZip}"
-}
-
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   name            = "CognitoUserPoolAPIAuthorizer"
   type            = "COGNITO_USER_POOLS"
@@ -251,13 +245,13 @@ resource "aws_api_gateway_method" "processamento_get_method" {
 
 resource "aws_api_gateway_method" "processamento_get_download_method" {
   rest_api_id   = var.api_gateway_id
-  resource_id   = aws_api_gateway_resource.chave_zip_resource.id
+  resource_id   = aws_api_gateway_resource.download_resource.id
   http_method   = "GET"
   authorization = "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 
   request_parameters = {
-    "method.request.path.chaveZip" = true
+    "method.request.querystring.chaveZip" = true
   }
 
   depends_on = [
@@ -280,14 +274,14 @@ resource "aws_api_gateway_integration" "processamento_get_integration" {
 
 resource "aws_api_gateway_integration" "processamento_get_download_integration" {
   rest_api_id             = var.api_gateway_id
-  resource_id             = aws_api_gateway_resource.chave_zip_resource.id
+  resource_id             = aws_api_gateway_resource.download_resource.id
   http_method             = aws_api_gateway_method.processamento_get_download_method.http_method
   integration_http_method = "GET"
   type                    = "HTTP_PROXY"
-  uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento/download/{chaveZip}"
+  uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento/download"
 
   request_parameters = {
-    "integration.request.path.chaveZip" = "method.request.path.chaveZip"
+    "method.request.querystring.chaveZip" = "method.request.querystring.chaveZip"
   }
 }
 
