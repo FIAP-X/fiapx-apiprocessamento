@@ -94,6 +94,21 @@ resource "aws_lb" "api_alb" {
   enable_cross_zone_load_balancing = true
 }
 
+resource "aws_lb_listener" "api_listener" {
+  load_balancer_arn = aws_lb.api_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404 Not Found"
+      status_code  = "404"
+    }
+  }
+}
+
 resource "aws_lb_target_group" "api_target_group" {
   name        = "api-processamento-target-group"
   port        = 8080
@@ -112,7 +127,7 @@ resource "aws_lb_target_group" "api_target_group" {
 }
 
 resource "aws_lb_listener_rule" "processamento_rule" {
-  listener_arn = aws_lb.api_alb.arn
+  listener_arn = aws_lb.api_listener.arn
   priority     = 30
 
   condition {
