@@ -33,4 +33,17 @@ public class HttpControllerAdapter {
         log.info(String.format("Fim da obtenção dos processamentos do usuário"));
         return ResponseEntity.ok().body(processamentos);
     }
+
+    @GetMapping("/download/{chaveZip}")
+    public ResponseEntity<String> gerarUrlDownload(@PathVariable String chaveZip) {
+        log.info("Gerando URL de download para o arquivo com chave: {}", chaveZip);
+
+        try {
+            String url = processamentoUseCase.gerarUrlDownload(chaveZip);
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            log.error("Erro ao gerar URL de download para chave: {}", chaveZip, e);
+            return ResponseEntity.status(500).body("Erro ao gerar URL de download");
+        }
+    }
 }
