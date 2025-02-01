@@ -127,7 +127,7 @@ resource "aws_lb_target_group" "api_target_group" {
 }
 
 resource "aws_lb_listener_rule" "processamento_rule" {
-  listener_arn = aws_lb.api_listener.arn
+  listener_arn = aws_lb_listener.api_listener.arn
   priority     = 30
 
   condition {
