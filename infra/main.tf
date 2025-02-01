@@ -223,7 +223,7 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
 
 resource "aws_api_gateway_method" "processamento_get_method" {
   rest_api_id   = var.api_gateway_id
-  resource_id   = aws_api_gateway_resource.processamento_resource.id
+  resource_id   = aws_api_gateway_resource.user_id_resource.id
   http_method   = "GET"
   authorization = "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
@@ -239,7 +239,7 @@ resource "aws_api_gateway_method" "processamento_get_method" {
 
 resource "aws_api_gateway_integration" "processamento_get_integration" {
   rest_api_id             = var.api_gateway_id
-  resource_id             = aws_api_gateway_resource.processamento_resource.id
+  resource_id             = aws_api_gateway_resource.user_id_resource.id
   http_method             = aws_api_gateway_method.processamento_get_method.http_method
   integration_http_method = "GET"
   type                    = "HTTP_PROXY"
