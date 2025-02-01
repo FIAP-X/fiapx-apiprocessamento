@@ -10,4 +10,6 @@ import java.util.List;
 public interface ProcessamentoMapper {
 
     List<ProcessamentoDTO> toDTOList(List<ProcessamentoEntity> entities);
+
+    ProcessamentoDTO toDTO(ProcessamentoEntity entity);
 }
