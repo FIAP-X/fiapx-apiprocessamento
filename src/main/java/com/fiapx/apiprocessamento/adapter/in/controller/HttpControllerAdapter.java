@@ -1,6 +1,6 @@
 package com.fiapx.apiprocessamento.adapter.in.controller;
 
-import com.fiapx.apiprocessamento.adapter.in.controller.dto.StatusProcessamentoDto;
+import com.fiapx.apiprocessamento.core.model.ProcessamentoDTO;
 import com.fiapx.apiprocessamento.core.usecase.ProcessamentoUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/processamento")
@@ -17,23 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class HttpControllerAdapter {
     private final ProcessamentoUseCase processamentoUseCase;
 
-    @GetMapping("/{chaveVideo}")
-    public ResponseEntity<StatusProcessamentoDto> obterStatusProcessamento(@PathVariable String chaveVideo) {
-        log.info(String.format("Obtendo status processamento %s", chaveVideo));
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<ProcessamentoDTO>> obterStatusProcessamento(@PathVariable String userId) {
+        log.info(String.format("Obtendo status dos processamentos do usuário %s", userId));
 
-        var statusProcessamento = processamentoUseCase.consultarStatusProcessamento(chaveVideo);
+        var processamentos = processamentoUseCase.consultarStatusProcessamento(userId);
 
-        if (statusProcessamento.isEmpty()) {
-            log.info((String.format("Não foi encontrado o vídeo com a chave %s", chaveVideo)));
+        if (processamentos.isEmpty()) {
+            log.info((String.format("Não foi encontrado processamento para o usuário %s", userId)));
             return ResponseEntity.notFound().build();
         }
 
-        final var statusResponse = StatusProcessamentoDto.builder()
-                .status(statusProcessamento.get().name())
-                .chaveVideo(chaveVideo)
-                .build();
-
-        log.info(String.format("Fim da obtenção do status de processamento %s", statusResponse));
-        return ResponseEntity.ok().body(statusResponse);
+        log.info(String.format("Fim da obtenção dos processamentos do usuário"));
+        return ResponseEntity.ok().body(processamentos);
     }
 }
