@@ -222,6 +222,10 @@ resource "aws_api_gateway_method" "processamento_get_method" {
   authorization = "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 
+  request_parameters = {
+    "method.request.path.userId" = true
+  }
+
   depends_on = [
     aws_api_gateway_authorizer.cognito_authorizer
   ]
@@ -235,7 +239,7 @@ resource "aws_api_gateway_integration" "processamento_get_integration" {
   type                    = "HTTP_PROXY"
   uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento/{userId}"
   request_parameters = {
-    "integration.request.path.userId" = "method.request.header.userId"
+    "integration.request.path.userId" = "method.request.path.userId"
   }
 }
 
