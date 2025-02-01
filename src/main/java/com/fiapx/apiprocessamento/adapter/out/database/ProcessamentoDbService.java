@@ -9,7 +9,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.List;
 
 import static com.fiapx.apiprocessamento.core.util.ConstantesUtil.FIM;
 import static com.fiapx.apiprocessamento.core.util.ConstantesUtil.INICIO;
@@ -26,49 +26,48 @@ public class ProcessamentoDbService implements ProcessamentoDbServicePort {
     private final ProcessamentoRepository processamentoRepository;
 
     @Override
-    public void salvarStatusProcessamento(String chave) {
-        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, SALVAR_STATUS_PROCESSAMENTO_METHOD_NAME, INICIO), chave);
+    public void salvarStatusProcessamento(String chaveVideo, String userId) {
+        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, SALVAR_STATUS_PROCESSAMENTO_METHOD_NAME, INICIO), chaveVideo);
 
         final var processamento = ProcessamentoEntity.builder()
-                .chave(chave)
+                .chaveVideo(chaveVideo)
+                .userId(userId)
                 .statusProcessamentoEnum(StatusProcessamentoEnum.EM_PROCESSAMENTO)
                 .build();
 
         processamentoRepository.save(processamento);
 
-        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, SALVAR_STATUS_PROCESSAMENTO_METHOD_NAME, FIM), chave);
+        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, SALVAR_STATUS_PROCESSAMENTO_METHOD_NAME, FIM), chaveVideo);
     }
 
     @Override
     @SneakyThrows
-    public Optional<StatusProcessamentoEnum> obterStatusProcessamento(String chave) {
-        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, OBTER_STATUS_PROCESSAMENTO_METHOD_NAME, INICIO), chave);
+    public List<ProcessamentoEntity> obterStatusProcessamento(String userId) {
+        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, OBTER_STATUS_PROCESSAMENTO_METHOD_NAME, INICIO), userId);
 
-        final var processamento = processamentoRepository.findById(chave);
+        final var processamentos = processamentoRepository.findByUserId(userId);
 
-        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, OBTER_STATUS_PROCESSAMENTO_METHOD_NAME, FIM), processamento);
+        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, OBTER_STATUS_PROCESSAMENTO_METHOD_NAME, FIM), processamentos);
 
-        return processamento.map(ProcessamentoEntity::getStatusProcessamentoEnum);
-
+        return processamentos;
     }
 
     @Override
     @SneakyThrows
-    public Optional<ProcessamentoEntity> atualizarStatusProcessamento(String chave, StatusProcessamentoEnum statusProcessamentoEnum) {
-        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, ATUALIZAR_STATUS_PROCESSAMENTO_METHOD_NAME, INICIO), chave);
+    public void atualizarStatusProcessamento(String chaveVideo, String chaveZip, StatusProcessamentoEnum statusProcessamentoEnum) {
+        log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, ATUALIZAR_STATUS_PROCESSAMENTO_METHOD_NAME, INICIO), chaveVideo);
 
-        var processamento = processamentoRepository.findById(chave);
+        var processamento = processamentoRepository.findById(chaveVideo);
 
         if (processamento.isEmpty()) {
-            return Optional.empty();
+            return;
         }
 
         processamento.get().setStatusProcessamentoEnum(statusProcessamentoEnum);
+        processamento.get().setChaveZip(chaveZip);
 
         processamentoRepository.save(processamento.get());
 
         log.info(String.format(STRING_LOG_FORMAT, SERVICE_NAME, ATUALIZAR_STATUS_PROCESSAMENTO_METHOD_NAME, FIM), processamento);
-
-        return processamento;
     }
 }

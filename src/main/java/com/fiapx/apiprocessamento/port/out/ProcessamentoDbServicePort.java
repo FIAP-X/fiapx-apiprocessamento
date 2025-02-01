@@ -3,13 +3,13 @@ package com.fiapx.apiprocessamento.port.out;
 import com.fiapx.apiprocessamento.adapter.out.database.entities.ProcessamentoEntity;
 import com.fiapx.apiprocessamento.core.enums.StatusProcessamentoEnum;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ProcessamentoDbServicePort {
 
-    void salvarStatusProcessamento(String chave);
+    void salvarStatusProcessamento(String chaveVideo, String userId);
 
-    Optional<StatusProcessamentoEnum> obterStatusProcessamento(String chave);
+    List<ProcessamentoEntity> obterStatusProcessamento(String userId);
 
-    Optional<ProcessamentoEntity> atualizarStatusProcessamento(String chave, StatusProcessamentoEnum statusProcessamentoEnum);
+    void atualizarStatusProcessamento(String chave, String chaveZip, StatusProcessamentoEnum statusProcessamentoEnum);
 }

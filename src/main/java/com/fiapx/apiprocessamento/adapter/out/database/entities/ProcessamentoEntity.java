@@ -22,7 +22,9 @@ public class ProcessamentoEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 4181172446495001465L;
     @Id
-    private String chave;
+    private String chaveVideo;
+    private String chaveZip;
+    private String userId;
     @Enumerated(EnumType.STRING)
     private StatusProcessamentoEnum statusProcessamentoEnum;
 }
