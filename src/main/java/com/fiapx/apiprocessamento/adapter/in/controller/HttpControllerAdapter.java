@@ -31,7 +31,7 @@ public class HttpControllerAdapter {
         return ResponseEntity.ok().body(processamentos);
     }
 
-    @GetMapping("/download/{chaveZip}")
+    @GetMapping("/download")
     public ResponseEntity<String> gerarUrlDownload(@RequestParam String chaveZip) {
         log.info("Gerando URL de download para o arquivo com chave: {}", chaveZip);
 
