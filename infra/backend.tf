@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "fiapx-bucket-statefile"
+    bucket = "fiapx-statefile-bucket"
     key    = "apiprocessamento/terraform.tfstate"
     region = "us-east-1"
   }

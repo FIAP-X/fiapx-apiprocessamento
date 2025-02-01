@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -24,25 +23,20 @@ public class ProcessamentoUseCase {
 
     public void processarVideo(String chaveVideo) throws IOException {
 
-        // TO-DO ATUALIZAR APICONSULTA - PROCESSANDO
         processamentoDbService.salvarStatusProcessamento(chaveVideo);
 
         var video = s3Service.buscarVideo(chaveVideo);
+
         ValidadorUtil.validarVideo(video.length);
 
-        // TO-DO PROCESSAMENTO
+        var resultadoProcessamento = videoProcessor.processarVideo(video);
 
-        s3Service.salvarImagens(chaveVideo, video);
+        s3Service.salvarImagens(chaveVideo, resultadoProcessamento);
 
-        // TO-DO ATUALIZAR APICONSULTA - PROCESSADO + URL
         processamentoDbService.atualizarStatusProcessamento(chaveVideo, StatusProcessamentoEnum.PROCESSADO);
     }
 
     public Optional<StatusProcessamentoEnum> consultarStatusProcessamento(String chaveVideo) {
         return processamentoDbService.obterStatusProcessamento(chaveVideo);
-    }
-
-    private List<byte[]> dividirVideoEmPartes(byte[] video) {
-        return List.of(video);
     }
 }
