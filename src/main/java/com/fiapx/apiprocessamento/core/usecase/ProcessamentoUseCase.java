@@ -31,8 +31,10 @@ public class ProcessamentoUseCase {
 
         var resultadoProcessamento = videoProcessor.processarVideo(video);
 
+        // salvar como zip em nova chave
         s3Service.salvarImagens(chaveVideo, resultadoProcessamento);
 
+        // salvar url do zip e incluir listagem por usuário e por não chave
         processamentoDbService.atualizarStatusProcessamento(chaveVideo, StatusProcessamentoEnum.PROCESSADO);
     }
 

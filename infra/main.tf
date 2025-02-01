@@ -221,7 +221,7 @@ resource "aws_api_gateway_integration" "processamento_get_integration" {
   http_method             = aws_api_gateway_method.processamento_get_method.http_method
   integration_http_method = "GET"
   type                    = "HTTP_PROXY"
-  uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento"
+  uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento/{chaveVideo}"
 }
 
 resource "aws_api_gateway_deployment" "api_deployment" {
