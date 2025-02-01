@@ -5,10 +5,7 @@ import com.fiapx.apiprocessamento.core.usecase.ProcessamentoUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,7 +32,7 @@ public class HttpControllerAdapter {
     }
 
     @GetMapping("/download/{chaveZip}")
-    public ResponseEntity<String> gerarUrlDownload(@PathVariable String chaveZip) {
+    public ResponseEntity<String> gerarUrlDownload(@RequestParam String chaveZip) {
         log.info("Gerando URL de download para o arquivo com chave: {}", chaveZip);
 
         try {
