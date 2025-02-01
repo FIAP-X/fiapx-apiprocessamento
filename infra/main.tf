@@ -198,13 +198,16 @@ resource "aws_api_gateway_method" "processamento_get_method" {
   resource_id   = aws_api_gateway_resource.processamento_resource.id
   http_method   = "GET"
   authorization = "NONE"
+}
 
-  integration {
-    type                   = "HTTP_PROXY"
-    http_method            = "GET"
-    uri                    = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento"
-    payload_format_version = "1.0"
-  }
+resource "aws_api_gateway_method_integration" "processamento_get_integration" {
+  rest_api_id             = var.api_gateway_id
+  resource_id             = aws_api_gateway_resource.processamento_resource.id
+  http_method             = aws_api_gateway_method.processamento_get_method.http_method
+  integration_http_method = "GET"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento"
+  payload_format_version  = "1.0"
 }
 
 resource "aws_api_gateway_deployment" "api_deployment" {
