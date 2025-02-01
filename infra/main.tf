@@ -200,7 +200,7 @@ resource "aws_api_gateway_method" "processamento_get_method" {
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_method_integration" "processamento_get_integration" {
+resource "aws_api_gateway_integration" "processamento_get_integration" {
   rest_api_id             = var.api_gateway_id
   resource_id             = aws_api_gateway_resource.processamento_resource.id
   http_method             = aws_api_gateway_method.processamento_get_method.http_method
@@ -214,11 +214,12 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = var.api_gateway_id
 
   depends_on = [
+    aws_api_gateway_integration.processamento_get_integration,
     aws_api_gateway_method.processamento_get_method
   ]
 }
 
-resource "aws_api_gateway_stage" "rest_api_stage" {
+resource "aws_api_gateway_stage" "api_stage" {
   stage_name    = "prod"
   rest_api_id   = var.api_gateway_id
   deployment_id = aws_api_gateway_deployment.api_deployment.id
