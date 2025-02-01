@@ -234,6 +234,9 @@ resource "aws_api_gateway_integration" "processamento_get_integration" {
   integration_http_method = "GET"
   type                    = "HTTP_PROXY"
   uri                     = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento/{userId}"
+  request_parameters = {
+    "integration.request.path.userId" = "method.request.header.userId"
+  }
 }
 
 resource "aws_api_gateway_deployment" "api_deployment" {
