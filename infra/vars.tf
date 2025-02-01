@@ -29,6 +29,16 @@ variable "ecs_cluster_arn" {
   type        = string
 }
 
+variable "api_gateway_id" {
+  description = "ID do API Gateway"
+  type        = string
+}
+
+variable "api_gateway_root_resource_id" {
+  description = "ID do recurso raiz da API Gateway"
+  type        = string
+}
+
 variable "aws_access_key_id" {
   description = "Chave de acesso da AWS"
   type        = string

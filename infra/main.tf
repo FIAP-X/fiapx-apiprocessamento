@@ -64,6 +64,25 @@ resource "aws_security_group" "ecs_service_sg" {
   }
 }
 
+resource "aws_security_group" "alb_sg" {
+  name   = "fiap-x-alb-sg"
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_lb" "api_alb" {
   name                       = "api-processamento-alb"
   internal                   = false
@@ -73,13 +92,6 @@ resource "aws_lb" "api_alb" {
   enable_deletion_protection = false
 
   enable_cross_zone_load_balancing = true
-}
-
-resource "aws_lb" "nlb" {
-  name               = "api-processamento-nlb"
-  internal           = false
-  load_balancer_type = "network"
-  subnets            = var.subnet_ids
 }
 
 resource "aws_lb_target_group" "api_target_group" {
@@ -175,89 +187,40 @@ resource "aws_db_instance" "fiapx_db_produto" {
   db_subnet_group_name   = aws_db_subnet_group.fiapx_subnet_group.name
 }
 
-#API GATEWAY
-resource "aws_api_gateway_rest_api" "rest_api" {
-  name = "processamento-api-gateway-rest-api"
-  endpoint_configuration {
-    types = ["REGIONAL"]
-  }
-  body = jsonencode({
-    openapi = "3.0.1"
-    info    = {
-      title   = "Processamentos"
-      version = "1.0"
-    }
-    paths = {
-      "/processamento" = {
-        get = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "GET"
-            payloadFormatVersion = "1.0"
-            type                 = "HTTP_PROXY"
-            uri                  = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento"
-          }
-        },
-        post = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "POST"
-            payloadFormatVersion = "1.0"
-            type                 = "HTTP_PROXY"
-            uri                  = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento"
-          }
-        }
-      }
-    }
-  })
+resource "aws_api_gateway_resource" "processamento_resource" {
+  rest_api_id = var.api_gateway_id
+  parent_id   = var.api_gateway_root_resource_id
+  path_part   = "processamento"
 }
 
-resource "aws_api_gateway_deployment" "rest_api" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+resource "aws_api_gateway_method" "processamento_get_method" {
+  rest_api_id   = var.api_gateway_id
+  resource_id   = aws_api_gateway_resource.processamento_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
 
-  triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.rest_api.body))
-  }
-
-  lifecycle {
-    create_before_destroy = true
+  integration {
+    type                   = "HTTP_PROXY"
+    http_method            = "GET"
+    uri                    = "http://${aws_lb.api_alb.dns_name}/api/v1/processamento"
+    payload_format_version = "1.0"
   }
 }
 
-resource "aws_api_gateway_stage" "rest_api" {
-  deployment_id = aws_api_gateway_deployment.rest_api.id
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+resource "aws_api_gateway_deployment" "api_deployment" {
+  rest_api_id = var.api_gateway_id
+
+  depends_on = [
+    aws_api_gateway_method.processamento_get_method
+  ]
+}
+
+resource "aws_api_gateway_stage" "rest_api_stage" {
   stage_name    = "prod"
-}
+  rest_api_id   = var.api_gateway_id
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
 
-resource "aws_api_gateway_method_settings" "rest_api" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  stage_name  = aws_api_gateway_stage.rest_api.stage_name
-  method_path = "*/*"
-
-  settings {
-    metrics_enabled = false
-  }
-}
-
-resource "aws_api_gateway_vpc_link" "vpc_link" {
-  name        = "processamento-api-gateway-vpc-link"
-  target_arns = [aws_lb.nlb.arn]
-}
-
-resource "aws_security_group" "alb_sg" {
-  name   = "fiap-x-alb-sg"
-  vpc_id = var.vpc_id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
 }
