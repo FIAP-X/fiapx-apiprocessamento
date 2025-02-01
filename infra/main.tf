@@ -205,7 +205,7 @@ resource "aws_db_instance" "fiapx_db_produto" {
 resource "aws_api_gateway_resource" "processamento_resource" {
   rest_api_id = var.api_gateway_id
   parent_id   = var.api_gateway_root_resource_id
-  path_part   = "processamento/{userId}"
+  path_part   = "processamento"
 }
 
 resource "aws_api_gateway_resource" "user_id_resource" {
