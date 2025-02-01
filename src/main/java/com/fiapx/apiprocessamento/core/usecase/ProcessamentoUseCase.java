@@ -4,7 +4,6 @@ import com.fiapx.apiprocessamento.core.domain.VideoProcessor;
 import com.fiapx.apiprocessamento.core.enums.StatusProcessamentoEnum;
 import com.fiapx.apiprocessamento.core.mapper.ProcessamentoMapper;
 import com.fiapx.apiprocessamento.core.model.ProcessamentoDTO;
-import com.fiapx.apiprocessamento.core.util.ValidadorUtil;
 import com.fiapx.apiprocessamento.port.out.ProcessamentoDbServicePort;
 import com.fiapx.apiprocessamento.port.out.S3ServicePort;
 import lombok.RequiredArgsConstructor;
@@ -33,15 +32,11 @@ public class ProcessamentoUseCase {
 
         var video = s3Service.buscarVideo(chaveVideo);
 
-        ValidadorUtil.validarVideo(video.length);
-
         var resultadoProcessamento = videoProcessor.processarVideo(video);
 
         var chaveZip = String.format("zips/%s/%s.zip", userId, UUID.randomUUID());
 
         s3Service.salvarImagens(chaveZip, resultadoProcessamento);
-
-        //s3Service.gerarUrlPreAssinada(chaveZip);
 
         processamentoDbService.atualizarStatusProcessamento(chaveVideo, chaveZip, StatusProcessamentoEnum.PROCESSADO);
     }
@@ -49,5 +44,9 @@ public class ProcessamentoUseCase {
     public List<ProcessamentoDTO> consultarStatusProcessamento(String userId) {
         var processamentos = processamentoDbService.obterStatusProcessamento(userId);
         return processamentoMapper.toDTOList(processamentos);
+    }
+
+    public String gerarUrlDownload(String chaveZip) {
+        return s3Service.gerarUrlPreAssinada(chaveZip);
     }
 }
