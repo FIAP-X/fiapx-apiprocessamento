@@ -14,7 +14,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
       AWS_REGION: 'us-east-1'
-      ECR_REPOSITORY: '733005211464.dkr.ecr.us-east-1.amazonaws.com/fiapx-apiprocessamento'
+      ECR_REPOSITORY: '475175191762.dkr.ecr.us-east-1.amazonaws.com/fiapx-apiprocessamento'
 
     steps:
       - name: Checkout repository
@@ -40,7 +40,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
       AWS_REGION: 'us-east-1'
-      ECR_REPOSITORY: '733005211464.dkr.ecr.us-east-1.amazonaws.com/fiapx-apiprocessamento'
 
     defaults:
       run:
