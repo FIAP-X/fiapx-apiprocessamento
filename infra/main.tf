@@ -209,7 +209,7 @@ resource "aws_api_gateway_resource" "processamento_resource" {
 }
 
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
-  name            = "CognitoUserPoolAuthorizer"
+  name            = "CognitoUserPoolAPIAuthorizer"
   type            = "COGNITO_USER_POOLS"
   rest_api_id     = var.api_gateway_id
   provider_arns   = [var.cognito_user_pool_arn]
