@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -23,6 +24,9 @@ public class ProcessamentoUseCase {
 
     public void processarVideo(String chaveVideo) throws IOException {
 
+        var userId = chaveVideo.split("/")[1];
+
+        // listagem por usuário userId
         processamentoDbService.salvarStatusProcessamento(chaveVideo);
 
         var video = s3Service.buscarVideo(chaveVideo);
@@ -31,10 +35,14 @@ public class ProcessamentoUseCase {
 
         var resultadoProcessamento = videoProcessor.processarVideo(video);
 
-        // salvar como zip em nova chave
-        s3Service.salvarImagens(chaveVideo, resultadoProcessamento);
+        var chaveZip = String.format("zips/%s/%s.zip", userId, UUID.randomUUID());
 
-        // salvar url do zip e incluir listagem por usuário e por não chave
+        s3Service.salvarImagens(chaveZip, resultadoProcessamento);
+
+        // remover (apenas para verificar funcionamento da url)
+        s3Service.gerarUrlPreAssinada(chaveZip);
+
+        // listagem por usuário
         processamentoDbService.atualizarStatusProcessamento(chaveVideo, StatusProcessamentoEnum.PROCESSADO);
     }
 
