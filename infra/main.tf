@@ -208,11 +208,23 @@ resource "aws_api_gateway_resource" "processamento_resource" {
   path_part   = "processamento"
 }
 
+resource "aws_api_gateway_authorizer" "cognito_authorizer" {
+  name            = "CognitoUserPoolAuthorizer"
+  type            = "COGNITO_USER_POOLS"
+  rest_api_id     = var.api_gateway_id
+  provider_arns   = [var.cognito_user_pool_arn]
+}
+
 resource "aws_api_gateway_method" "processamento_get_method" {
   rest_api_id   = var.api_gateway_id
   resource_id   = aws_api_gateway_resource.processamento_resource.id
   http_method   = "GET"
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
+
+  depends_on = [
+    aws_api_gateway_authorizer.cognito_authorizer
+  ]
 }
 
 resource "aws_api_gateway_integration" "processamento_get_integration" {

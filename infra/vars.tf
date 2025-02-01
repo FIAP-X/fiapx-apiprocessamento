@@ -50,3 +50,8 @@ variable "aws_secret_access_key" {
   type        = string
   sensitive   = true
 }
+
+variable "cognito_user_pool_arn" {
+  description = "ARN do Cognito User Pool"
+  type        = string
+}
