@@ -40,7 +40,7 @@ class HttpControllerAdapterTest {
 
         ResponseEntity<List<ProcessamentoDTO>> response = httpControllerAdapter.obterStatusProcessamento(userId);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
         verify(processamentoUseCase, times(1)).consultarStatusProcessamento(userId);
@@ -53,7 +53,7 @@ class HttpControllerAdapterTest {
 
         ResponseEntity<List<ProcessamentoDTO>> response = httpControllerAdapter.obterStatusProcessamento(userId);
 
-        assertEquals(404, response.getStatusCodeValue());
+        assertEquals(404, response.getStatusCode().value());
         verify(processamentoUseCase, times(1)).consultarStatusProcessamento(userId);
     }
 
@@ -64,7 +64,7 @@ class HttpControllerAdapterTest {
 
         ResponseEntity<String> response = httpControllerAdapter.gerarUrlDownload(chaveZip);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals(url, response.getBody());
         verify(processamentoUseCase, times(1)).gerarUrlDownload(chaveZip);
     }
@@ -75,7 +75,7 @@ class HttpControllerAdapterTest {
 
         ResponseEntity<String> response = httpControllerAdapter.gerarUrlDownload(chaveZip);
 
-        assertEquals(500, response.getStatusCodeValue());
+        assertEquals(500, response.getStatusCode().value());
         assertEquals("Erro ao gerar URL de download", response.getBody());
         verify(processamentoUseCase, times(1)).gerarUrlDownload(chaveZip);
     }
