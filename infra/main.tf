@@ -147,7 +147,7 @@ resource "aws_ecs_service" "api_service" {
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.api_task.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = 2
 
   network_configuration {
     subnets          = var.subnet_ids
@@ -159,6 +159,50 @@ resource "aws_ecs_service" "api_service" {
     target_group_arn = aws_lb_target_group.api_target_group.arn
     container_name   = "api-container-processamento"
     container_port   = 8080
+  }
+}
+
+resource "aws_application_autoscaling_target" "ecs_autoscaling_target" {
+  max_capacity       = 6
+  min_capacity       = 2
+  resource_id        = "service/${var.ecs_cluster_name}/${aws_ecs_service.api_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_application_autoscaling_policy" "scale_up_policy" {
+  name                   = "scale-up-policy"
+  policy_type            = "TargetTrackingScaling"
+  resource_id           = aws_application_autoscaling_target.ecs_autoscaling_target.id
+  scalable_dimension    = "ecs:service:DesiredCount"
+  service_namespace     = "ecs"
+  target_tracking_scaling_policy_configuration {
+    target_value       = 80.0
+    customized_metric_specification {
+      metric_name = "CPUUtilization"
+      namespace   = "AWS/ECS"
+      statistic  = "Average"
+    }
+    scale_in_cooldown  = 60
+    scale_out_cooldown = 60
+  }
+}
+
+resource "aws_application_autoscaling_policy" "scale_down_policy" {
+  name                   = "scale-down-policy"
+  policy_type            = "TargetTrackingScaling"
+  resource_id           = aws_application_autoscaling_target.ecs_autoscaling_target.id
+  scalable_dimension    = "ecs:service:DesiredCount"
+  service_namespace     = "ecs"
+  target_tracking_scaling_policy_configuration {
+    target_value       = 80.0
+    customized_metric_specification {
+      metric_name = "CPUUtilization"
+      namespace   = "AWS/ECS"
+      statistic  = "Average"
+    }
+    scale_in_cooldown  = 60
+    scale_out_cooldown = 60
   }
 }
 
