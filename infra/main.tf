@@ -162,47 +162,49 @@ resource "aws_ecs_service" "api_service" {
   }
 }
 
-resource "aws_application_autoscaling_target" "ecs_autoscaling_target" {
+resource "aws_appautoscaling_target" "ecs_autoscaling_target" {
   max_capacity       = 6
   min_capacity       = 2
-  resource_id        = "service/${var.ecs_cluster_name}/${aws_ecs_service.api_service.name}"
+  resource_id        = "service/fiapx-cluster/${aws_ecs_service.api_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
 
-resource "aws_application_autoscaling_policy" "scale_up_policy" {
-  name                   = "scale-up-policy"
-  policy_type            = "TargetTrackingScaling"
-  resource_id           = aws_application_autoscaling_target.ecs_autoscaling_target.id
-  scalable_dimension    = "ecs:service:DesiredCount"
-  service_namespace     = "ecs"
-  target_tracking_scaling_policy_configuration {
-    target_value       = 80.0
-    customized_metric_specification {
-      metric_name = "CPUUtilization"
-      namespace   = "AWS/ECS"
-      statistic  = "Average"
+resource "aws_appautoscaling_policy" "scale_up_policy" {
+  name               = "scale-up"
+  policy_type        = "StepScaling"
+  resource_id        = aws_appautoscaling_target.ecs_autoscaling_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_autoscaling_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_autoscaling_target.service_namespace
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 60
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_lower_bound = 80
+      scaling_adjustment          = 1
     }
-    scale_in_cooldown  = 60
-    scale_out_cooldown = 60
   }
 }
 
-resource "aws_application_autoscaling_policy" "scale_down_policy" {
-  name                   = "scale-down-policy"
-  policy_type            = "TargetTrackingScaling"
-  resource_id           = aws_application_autoscaling_target.ecs_autoscaling_target.id
-  scalable_dimension    = "ecs:service:DesiredCount"
-  service_namespace     = "ecs"
-  target_tracking_scaling_policy_configuration {
-    target_value       = 80.0
-    customized_metric_specification {
-      metric_name = "CPUUtilization"
-      namespace   = "AWS/ECS"
-      statistic  = "Average"
+resource "aws_appautoscaling_policy" "scale_down_policy" {
+  name               = "scale-down"
+  policy_type        = "StepScaling"
+  resource_id        = aws_appautoscaling_target.ecs_autoscaling_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_autoscaling_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_autoscaling_target.service_namespace
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 60
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_upper_bound = 0
+      scaling_adjustment          = -1
     }
-    scale_in_cooldown  = 60
-    scale_out_cooldown = 60
   }
 }
 
