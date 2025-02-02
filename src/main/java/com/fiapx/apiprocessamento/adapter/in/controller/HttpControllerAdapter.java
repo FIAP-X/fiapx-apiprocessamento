@@ -27,7 +27,7 @@ public class HttpControllerAdapter {
             return ResponseEntity.notFound().build();
         }
 
-        log.info(String.format("Fim da obtenção dos processamentos do usuário"));
+        log.info("Fim da obtenção dos processamentos do usuário");
         return ResponseEntity.ok().body(processamentos);
     }
 
